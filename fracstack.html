@@ -86,28 +86,21 @@
   }
 
   /* Media query para pantallas pequeñas */
-  @media (max-width: 768px) {
-  body, html {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    overflow-x: hidden; /* evita scroll horizontal */
-  }
+@media (max-width: 768px) {
   #container {
     flex-direction: column;
-    padding: 0; /* quitar padding para que no haya margen */
-    width: 100vw;
+    padding: 10px 0;   /* un poco de espacio arriba y abajo */
+    width: 100%;       /* ancho total */
+    max-width: 100vw;  /* evita que el ancho supere la pantalla */
     box-sizing: border-box;
   }
   #tablaContainer, #chartContainer {
-    width: 100vw !important; /* asegurar que ocupa toda la pantalla */
-    flex: none;
+    width: 100% !important;
+    max-width: 100vw !important;
     margin: 0 0 20px 0;
     box-sizing: border-box;
-    padding: 15px;
-  }argin-bottom: 20px;
-    }
   }
+}
 </style>
 </head>
 <body>
@@ -277,6 +270,7 @@
 </script>
 </body>
 </html>
+
 
 
 
