@@ -105,9 +105,53 @@ th, td {
     flex: none;
   }
 }
+
+  #mainHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+#logo {
+  height: 50px; /* ajustá tamaño */
+  width: auto;
+  margin-right: 15px;
+}
+
+#connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#connectionIndicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: red; /* por defecto desconectado */
+}
+
+#statusText {
+  font-weight: bold;
+  color: #333;
+}
+
+
+  
 </style>
 </head>
 <body>
+  <header id="mainHeader">
+    <img src="tu-imagen.png" alt="Logo" id="logo">
+    <!-- Si querés, el indicador de conexión también puede ir acá -->
+    <div id="connectionStatus">
+      <span id="connectionIndicator"></span>
+      <span id="statusText">Desconectado</span>
+    </div>
+  </header>
   <h1 style="text-align:center; margin-top:10px;">Pozo 1</h1>
   <div style="text-align:center; margin-bottom: 10px;">
     Estado conexión: <span id="connectionIndicator"></span><span id="statusText">Desconectado</span>
@@ -274,6 +318,7 @@ th, td {
 </script>
 </body>
 </html>
+
 
 
 
