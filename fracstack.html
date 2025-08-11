@@ -18,6 +18,8 @@
 
     /* Desktop: fila (tabla izq, chart der) */
     flex-direction: row;
+    align-items: flex-start; /* que los hijos se alineen arriba */
+    justify-content: flex-start; /* no estiren */
   }
   #chartContainer, #tablaContainer {
     background: white;
@@ -25,6 +27,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     padding: 15px;
     overflow: hidden;
+
+    flex: none;
+    width: auto;
+    max-width: 48%; /* para que no se desborden y haya gap */
   }
   #chartContainer {
     flex: 1;
@@ -260,6 +266,7 @@
 </script>
 </body>
 </html>
+
 
 
 
