@@ -15,6 +15,9 @@
     box-sizing: border-box;
     padding: 20px;
     gap: 20px;
+
+    /* Desktop: fila (tabla izq, chart der) */
+    flex-direction: row;
   }
   #chartContainer, #tablaContainer {
     background: white;
@@ -74,6 +77,19 @@
     margin-top: 10px;
     border-radius: 4px;
     padding: 6px;
+  }
+
+  /* Media query para pantallas pequeñas */
+  @media (max-width: 768px) {
+    #container {
+      flex-direction: column;
+      padding: 10px;
+    }
+    #tablaContainer, #chartContainer {
+      width: 100%;
+      flex: none;
+      margin-bottom: 20px;
+    }
   }
 </style>
 </head>
@@ -241,6 +257,7 @@
 </script>
 </body>
 </html>
+
 
 
 
