@@ -15,33 +15,31 @@ html, body {
   background: #f4f4f4;
 }
 
-/* Contenedor principal */
 #container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: space-between; /* espacio entre */
   gap: 20px;
   padding: 20px;
-  height: 100vh; /* ocupa toda la pantalla */
+  height: 100vh;
   box-sizing: border-box;
   flex-wrap: nowrap;
 }
 
-/* Contenedores hijos tabla y chart */
 #tablaContainer, #chartContainer {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 15px;
   overflow: hidden;
-  flex: none;
-  max-width: 48%;
-  width: auto;
+  flex: 1;             /* que crezcan igual */
+  max-width: none;     /* no limitar ancho */
   box-sizing: border-box;
+  min-width: 0;        /* para evitar overflow */
 }
 
-/* Titulos */
+/* Títulos */
 h2 {
   margin-top: 0;
   margin-bottom: 15px;
@@ -98,12 +96,13 @@ th, td {
     flex-direction: column;
     padding: 10px;
     gap: 10px;
-    height: auto; /* para que no ocupe toda la altura fija */
+    height: auto;
   }
   #tablaContainer, #chartContainer {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 0 20px 0;
+    flex: none;
   }
 }
 </style>
@@ -275,6 +274,7 @@ th, td {
 </script>
 </body>
 </html>
+
 
 
 
