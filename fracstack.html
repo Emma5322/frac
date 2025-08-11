@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard MQTT con HiveMQ y tabla de válvulas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 3px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #status {
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        #messages {
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            min-height: 100px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        .msg {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        .verde {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .rojo {
+            background-color: #f44336;
+            color: white;
+        }
+        .amarillo {
+            background-color: #ffeb3b;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard MQTT</h1>
+    <div class="container">
+        <label>Broker WebSocket (wss://...)</label>
+        <input id="brokerUrl" type="text" value="wss://TU_CLUSTER.s1.eu.hivemq.cloud:8884/mqtt">
+
+        <label>Client ID</label>
+        <input id="clientId" type="text" value="web-dashboard-001">
+
+        <label>Usuario</label>
+        <input id="mqttUser" type="text" value="TU_USUARIO">
+
+        <label>Contraseña</label>
+        <input id="mqttPass" type="password" value="TU_CONTRASEÑA">
+
+        <label>Tópico general</label>
+        <input id="topic" type="text" value="demo/test">
+
+        <label>Tópico estados válvulas</label>
+        <input id="topicValvulas" type="text" value="SMEstado">
+
+        <button id="connectBtn" type="button">Conectar</button>
+    </div>
+
+    <div id="status">Desconectado</div>
+
+    <h2>Estados de válvulas</h2>
+    <table id="tablaValvulas">
+        <tr>
+            <th>Válvula</th>
+            <th>Estado</th>
+        </tr>
+        <tr>
+            <td>Válvula 1</td>
+            <td id="valvula1">-</td>
+        </tr>
+        <tr>
+            <td>Válvula 2</td>
+            <td id="valvula2">-</td>
+        </tr>
+        <tr>
+            <td>Válvula 3</td>
+            <td id="valvula3">-</td>
+        </tr>
+        <tr>
+            <td>Válvula 4</td>
+            <td id="valvula4">-</td>
+        </tr>
+        <tr>
+            <td>Válvula 5</td>
+            <td id="valvula5">-</td>
+        </tr>
+    </table>
+
+    <h2>Mensajes MQTT</h2>
+    <div id="messages"></div>
+
+    <!-- Librería MQTT.js desde CDN -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        let client;
+
+        document.getElementById('connectBtn').addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const broker = document.getElementById('brokerUrl').value.trim();
+            const clientId = document.getElementById('clientId').value.trim() || 'web-dashboard-' + Math.floor(Math.random()*10000);
+            const user = document.getElementById('mqttUser').value.trim();
+            const pass = document.getElementById('mqttPass').value.trim();
+            const topic = document.getElementById('topic').value.trim();
+            const topicValvulas = document.getElementById('topicValvulas').value.trim();
+
+            const statusEl = document.getElementById('status');
+            const messagesEl = document.getElementById('messages');
+
+            if (!broker) {
+                alert("Completa la URL del broker");
+                return;
+            }
+
+            client = mqtt.connect(broker, {
+                clientId,
+                username: user,
+                password: pass,
+                connectTimeout: 5000,
+                keepalive: 30,
+                clean: true,
+                reconnectPeriod: 2000
+            });
+
+            client.on('connect', () => {
+                statusEl.textContent = "✅ Conectado a " + broker;
+                if (topic) client.subscribe(topic);
+                if (topicValvulas) client.subscribe(topicValvulas);
+            });
+
+            client.on('message', (t, message) => {
+                const msg = message.toString();
+                const time = new Date().toLocaleTimeString();
+
+                if (t === topicValvulas) {
+                    // Ejemplo: mensaje "1:abierta" o "3:transicion"
+                    const [num, estado] = msg.split(':');
+                    actualizarValvula(num, estado);
+                }
+
+                const div = document.createElement('div');
+                div.className = "msg";
+                div.textContent = `[${time}] ${t}: ${msg}`;
+                messagesEl.prepend(div);
+            });
+
+            client.on('error', (err) => {
+                statusEl.textContent = "❌ Error: " + err.message;
+            });
+
+            client.on('close', () => {
+                statusEl.textContent = "⚠️ Desconectado";
+            });
+        });
+
+        function actualizarValvula(numero, estado) {
+            const celda = document.getElementById(`valvula${numero}`);
+            if (!celda) return;
+
+            celda.className = ""; // limpiar color
+            estado = estado.trim().toLowerCase();
+
+            if (estado === "abierta") {
+                celda.textContent = "ABIERTA";
+                celda.classList.add("verde");
+            } else if (estado === "cerrada") {
+                celda.textContent = "CERRADA";
+                celda.classList.add("rojo");
+            } else if (estado === "transicion" || estado === "transición") {
+                celda.textContent = "TRANSICIÓN";
+                celda.classList.add("amarillo");
+            } else {
+                celda.textContent = estado.toUpperCase();
+            }
+        }
+    </script>
+</body>
+</html>
+
