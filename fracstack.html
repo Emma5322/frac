@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard MQTT - Estados de Válvulas Frac</title>
+<title>Dashboard MQTT - Válvula 2</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
     body {
@@ -21,11 +21,7 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         text-align: left;
     }
-    label {
-        font-weight: bold;
-        display: block;
-        margin-top: 10px;
-    }
+    label { font-weight: bold; display: block; margin-top: 10px; }
     input {
         width: 100%;
         padding: 6px;
@@ -58,10 +54,21 @@
     .verde { background-color: #4CAF50; color: white; }
     .rojo { background-color: #f44336; color: white; }
     .amarillo { background-color: #ffeb3b; color: black; }
+    #log {
+        background: #222;
+        color: #0f0;
+        font-family: monospace;
+        padding: 10px;
+        height: 150px;
+        overflow-y: scroll;
+        margin-top: 20px;
+        border-radius: 4px;
+    }
 </style>
 </head>
 <body>
 <h1>Dashboard MQTT</h1>
+
 <div class="container">
     <label>Broker WebSocket (wss://...)</label>
     <input id="brokerUrl" type="text" value="wss://TU_CLUSTER.s1.eu.hivemq.cloud:8884/mqtt">
@@ -78,28 +85,36 @@
     <label>Tópico estados válvulas</label>
     <input id="topicValvulas" type="text" value="SMEstado">
 
+    <label>Publicar mensaje</label>
+    <input id="publishMsg" type="text" placeholder="Ej: 2:abierta">
+
     <button id="connectBtn" type="button">Conectar</button>
+    <button id="sendBtn" type="button">Enviar</button>
 </div>
 
 <div id="status">Desconectado</div>
 
-<h2>Estados de válvulas</h2>
-<table id="tablaValvulas">
+<h2>Estado de Válvula 2</h2>
+<table>
     <tr><th>Válvula</th><th>Estado</th></tr>
-    <tr><td>Válvula 1</td><td id="valvula1">-</td></tr>
     <tr><td>Válvula 2</td><td id="valvula2">-</td></tr>
-    <tr><td>Válvula 3</td><td id="valvula3">-</td></tr>
-    <tr><td>Válvula 4</td><td id="valvula4">-</td></tr>
-    <tr><td>Válvula 5</td><td id="valvula5">-</td></tr>
 </table>
+
+<h2>Log de mensajes enviados y recibidos</h2>
+<div id="log"></div>
 
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
     let client;
 
-    document.getElementById('connectBtn').addEventListener('click', (event) => {
-        event.preventDefault();
+    const logEl = document.getElementById('log');
+    function logMsg(msg) {
+        const time = new Date().toLocaleTimeString();
+        logEl.innerHTML += `[${time}] ${msg}<br>`;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
 
+    document.getElementById('connectBtn').addEventListener('click', () => {
         const broker = document.getElementById('brokerUrl').value.trim();
         const clientId = document.getElementById('clientId').value.trim() || 'web-dashboard-' + Math.floor(Math.random()*10000);
         const user = document.getElementById('mqttUser').value.trim();
@@ -107,51 +122,59 @@
         const topicValvulas = document.getElementById('topicValvulas').value.trim();
         const statusEl = document.getElementById('status');
 
-        if (!broker) {
-            alert("Completa la URL del broker");
-            return;
-        }
-
         client = mqtt.connect(broker, {
             clientId,
             username: user,
             password: pass,
             connectTimeout: 5000,
-            keepalive: 30,       // Igual que el primer código
-            clean: false,        // Mantener sesión
+            keepalive: 30,
+            clean: false,
             reconnectPeriod: 2000
         });
 
         client.on('connect', () => {
             statusEl.textContent = "✅ Conectado a " + broker;
-            client.subscribe(topicValvulas, (err) => {
-                if (!err) console.log("Suscrito a:", topicValvulas);
-            });
+            logMsg(`Conectado y suscrito a ${topicValvulas}`);
+            client.subscribe(topicValvulas);
         });
 
-        client.on('message', (t, message) => {
+        client.on('message', (topic, message) => {
             const msg = message.toString();
-            if (t === topicValvulas) {
+            logMsg(`📥 [${topic}] ${msg}`);
+            if (topic === topicValvulas) {
                 const [num, estado] = msg.split(':');
-                actualizarValvula(num, estado);
+                if (num.trim() === "2") {
+                    actualizarValvula2(estado);
+                }
             }
         });
 
         client.on('error', (err) => {
             statusEl.textContent = "❌ Error: " + err.message;
+            logMsg(`Error: ${err.message}`);
         });
 
         client.on('close', () => {
             statusEl.textContent = "⚠️ Desconectado, reconectando...";
+            logMsg(`Conexión cerrada`);
         });
     });
 
-    function actualizarValvula(numero, estado) {
-        const celda = document.getElementById(`valvula${numero}`);
-        if (!celda) return;
+    document.getElementById('sendBtn').addEventListener('click', () => {
+        const topicValvulas = document.getElementById('topicValvulas').value.trim();
+        const msg = document.getElementById('publishMsg').value.trim();
+        if (client && client.connected && msg) {
+            client.publish(topicValvulas, msg);
+            logMsg(`📤 [${topicValvulas}] ${msg}`);
+        } else {
+            alert("No conectado o mensaje vacío");
+        }
+    });
+
+    function actualizarValvula2(estado) {
+        const celda = document.getElementById("valvula2");
         celda.className = "";
         estado = estado.trim().toLowerCase();
-
         if (estado === "abierta") {
             celda.textContent = "ABIERTA";
             celda.classList.add("verde");
@@ -168,8 +191,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
