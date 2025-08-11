@@ -13,29 +13,28 @@
  box-sizing: border-box;
 }
   }
-  #container {
-    display: flex;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 20px;
-    gap: 20px;
-
-    /* Desktop: fila (tabla izq, chart der) */
-    flex-direction: row;
-    align-items: flex-start; /* que los hijos se alineen arriba */
-    justify-content: flex-start; /* no estiren */
-  }
-  #chartContainer, #tablaContainer {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 15px;
-    overflow: hidden;
-
-    flex: none;
-    width: auto;
-    max-width: 48%; /* para que no se desborden y haya gap */
-  }
+#container {
+  display: flex;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  gap: 20px;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: nowrap; /* o wrap si querés que se adapte */
+}
+#chartContainer, #tablaContainer {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px;
+  overflow: hidden;
+  flex: none;
+  width: auto;
+  max-width: 48%;
+  box-sizing: border-box;
+}
   #chartContainer {
     flex: 1;
     display: flex;
@@ -274,6 +273,7 @@
 </script>
 </body>
 </html>
+
 
 
 
