@@ -1,187 +1,246 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard MQTT - Válvulas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<title>Dashboard MQTT con Gráfico</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f4f4;
-        text-align: center;
-        padding: 20px;
-    }
-    h1 { color: #333; }
-    .container {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        max-width: 600px;
-        margin: auto;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        text-align: left;
-    }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    input {
-        width: 100%;
-        padding: 6px;
-        margin-top: 3px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    button {
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 10px;
-        margin-top: 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    button:hover { background: #45a049; }
-    #status { font-weight: bold; margin: 15px 0; }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 15px;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: center;
-    }
-    .verde { background-color: #4CAF50; color: white; }
-    .rojo { background-color: #f44336; color: white; }
-    .amarillo { background-color: #ffeb3b; color: black; }
-    #log {
-        background: #222;
-        color: #0f0;
-        font-family: monospace;
-        padding: 10px;
-        height: 150px;
-        overflow-y: scroll;
-        margin-top: 20px;
-        border-radius: 4px;
-    }
+  body, html {
+    margin: 0; padding: 0; height: 100vh; font-family: Arial, sans-serif;
+    background: #f4f4f4;
+  }
+  #container {
+    display: flex;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    gap: 20px;
+  }
+  #chartContainer, #tablaContainer {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    overflow: hidden;
+  }
+  #chartContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  #tablaContainer {
+    flex: 1;
+  }
+  h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  .verde { background-color: #4CAF50; color: white; }
+  .rojo { background-color: #f44336; color: white; }
+  .amarillo { background-color: #ffeb3b; color: black; }
+  #connectionIndicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+    background-color: red;
+  }
+  #statusText {
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: middle;
+    color: #333;
+  }
+  #log {
+    font-family: monospace;
+    font-size: 12px;
+    height: 100px;
+    overflow-y: auto;
+    background: #222;
+    color: #0f0;
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px;
+  }
 </style>
 </head>
 <body>
-<h1>Dashboard MQTT</h1>
+  <h1 style="text-align:center; margin-top:10px;">Dashboard MQTT con Gráfico</h1>
+  <div style="text-align:center; margin-bottom: 10px;">
+    Estado conexión: <span id="connectionIndicator"></span><span id="statusText">Desconectado</span>
+  </div>
 
-<div class="container">
-    <label>Broker WebSocket (wss://...)</label>
-    <input id="brokerUrl" type="text" value="wss://28955e326d1f412db03f01769c814d7d.s1.eu.hivemq.cloud:8884/mqtt">
+  <div id="container">
+    <div id="chartContainer">
+      <h2>PPozo1 (últimos datos)</h2>
+      <canvas id="chart" style="width:100%; max-height:300px;"></canvas>
+      <div id="log"></div>
+    </div>
 
-    <label>Client ID</label>
-    <input id="clientId" type="text" value="web-dashboard-001">
-
-    <label>Usuario</label>
-    <input id="mqttUser" type="text" value="Emmanuel">
-
-    <label>Contraseña</label>
-    <input id="mqttPass" type="password" value="Emma1234">
-
-    <button id="connectBtn" type="button">Conectar</button>
-</div>
-
-<div id="status">Desconectado</div>
-
-<h2>Estado de Válvulas</h2>
-<table>
-    <tr><th>Válvula</th><th>Estado</th></tr>
-    <tr><td>Válvula COR</td><td id="valvula-COR">-</td></tr>
-    <tr><td>Válvula SM</td><td id="valvula-SM">-</td></tr>
-    <tr><td>Válvula FB</td><td id="valvula-FB">-</td></tr>
-    <tr><td>Válvula PD</td><td id="valvula-PD">-</td></tr>
-    <tr><td>Válvula SDP</td><td id="valvula-SDP">-</td></tr>
-</table>
-
-<h2>Log de mensajes recibidos</h2>
-<div id="log"></div>
+    <div id="tablaContainer">
+      <h2>Estado de Válvulas</h2>
+      <table>
+        <tr><th>Válvula</th><th>Estado</th></tr>
+        <tr><td>Válvula COR</td><td id="valvula-COR">-</td></tr>
+        <tr><td>Válvula SM</td><td id="valvula-SM">-</td></tr>
+        <tr><td>Válvula FB</td><td id="valvula-FB">-</td></tr>
+        <tr><td>Válvula PD</td><td id="valvula-PD">-</td></tr>
+        <tr><td>Válvula SDP</td><td id="valvula-SDP">-</td></tr>
+      </table>
+    </div>
+  </div>
 
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    let client;
+  // Configuración fija del broker y credenciales
+  const brokerUrl = "wss://28955e326d1f412db03f01769c814d7d.s1.eu.hivemq.cloud:8884/mqtt"; 
+  const mqttUser = "Emmanuel";
+  const mqttPass = "Emma1234";
 
-    const topicos = {
-        'COREstado': 'valvula-COR',
-        'SMEstado':  'valvula-SM',
-        'FBEstado':  'valvula-FB',
-        'PDEstado':  'valvula-PD',
-        'SDPEstado': 'valvula-SDP'
-    };
+  const topicosValvulas = {
+    'COREstado': 'valvula-COR',
+    'SMEstado':  'valvula-SM',
+    'FBEstado':  'valvula-FB',
+    'PDEstado':  'valvula-PD',
+    'SDPEstado': 'valvula-SDP'
+  };
 
-    const logEl = document.getElementById('log');
-    function logMsg(msg) {
-        const time = new Date().toLocaleTimeString();
-        logEl.innerHTML += `[${time}] ${msg}<br>`;
-        logEl.scrollTop = logEl.scrollHeight;
+  const connectionIndicator = document.getElementById('connectionIndicator');
+  const statusText = document.getElementById('statusText');
+  const logEl = document.getElementById('log');
+
+  function logMsg(msg) {
+    const time = new Date().toLocaleTimeString();
+    logEl.innerHTML += `[${time}] ${msg}<br>`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function actualizarCelda(id, estado) {
+    const celda = document.getElementById(id);
+    celda.className = "";
+    estado = estado.trim().toLowerCase();
+    estado = estado.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    if (estado === "abierta") {
+      celda.textContent = "ABIERTA";
+      celda.classList.add("verde");
+    } else if (estado === "cerrada") {
+      celda.textContent = "CERRADA";
+      celda.classList.add("rojo");
+    } else if (estado === "transicion") {
+      celda.textContent = "TRANSICIÓN";
+      celda.classList.add("amarillo");
+    } else {
+      celda.textContent = estado.toUpperCase();
+    }
+  }
+
+  // Configuración Chart.js para PPozo1
+  const ctx = document.getElementById('chart').getContext('2d');
+  const maxPoints = 30;
+  const chartData = {
+    labels: [],
+    datasets: [{
+      label: 'PPozo1',
+      data: [],
+      borderColor: 'rgba(0,123,255,1)',
+      backgroundColor: 'rgba(0,123,255,0.3)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 5,
+    }]
+  };
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      x: { display: true, title: { display: true, text: 'Tiempo' } },
+      y: { display: true, title: { display: true, text: 'Valor' }, beginAtZero: true }
+    }
+  };
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: chartOptions
+  });
+
+  function agregarDatoAlChart(valor) {
+    const time = new Date().toLocaleTimeString();
+    if (chartData.labels.length >= maxPoints) {
+      chartData.labels.shift();
+      chartData.datasets[0].data.shift();
+    }
+    chartData.labels.push(time);
+    chartData.datasets[0].data.push(valor);
+    myChart.update();
+  }
+
+  // Conexión MQTT
+  const clientId = 'web-dashboard-' + Math.random().toString(16).substr(2,8);
+
+  const client = mqtt.connect(brokerUrl, {
+    clientId,
+    username: mqttUser,
+    password: mqttPass,
+    clean: false,
+    reconnectPeriod: 2000,
+    connectTimeout: 5000,
+    keepalive: 30
+  });
+
+  client.on('connect', () => {
+    connectionIndicator.style.backgroundColor = "green";
+    statusText.textContent = "Conectado";
+    // Suscribimos a todos los tópicos de válvulas + PPozo1
+    Object.keys(topicosValvulas).forEach(t => client.subscribe(t));
+    client.subscribe("PPozo1");
+    logMsg("Conectado y suscrito a tópicos.");
+  });
+
+  client.on('message', (topic, message) => {
+    const msg = message.toString();
+    logMsg(`📥 [${topic}] ${msg}`);
+
+    if (topicosValvulas[topic]) {
+      actualizarCelda(topicosValvulas[topic], msg);
     }
 
-    function actualizarCelda(id, estado) {
-        const celda = document.getElementById(id);
-        celda.className = "";
-        estado = estado.trim().toLowerCase();
-        estado = estado.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // quitar acentos
-
-        if (estado === "abierta") {
-            celda.textContent = "ABIERTA";
-            celda.classList.add("verde");
-        } else if (estado === "cerrada") {
-            celda.textContent = "CERRADA";
-            celda.classList.add("rojo");
-        } else if (estado === "transicion") {
-            celda.textContent = "TRANSICIÓN";
-            celda.classList.add("amarillo");
-        } else {
-            celda.textContent = estado.toUpperCase();
-        }
+    if (topic === "PPozo1") {
+      const valor = parseFloat(msg);
+      if (!isNaN(valor)) {
+        agregarDatoAlChart(valor);
+      }
     }
+  });
 
-    document.getElementById('connectBtn').addEventListener('click', () => {
-        const broker = document.getElementById('brokerUrl').value.trim();
-        const clientId = document.getElementById('clientId').value.trim() || 'web-dashboard-' + Math.floor(Math.random()*10000);
-        const user = document.getElementById('mqttUser').value.trim();
-        const pass = document.getElementById('mqttPass').value.trim();
-        const statusEl = document.getElementById('status');
+  client.on('error', (error) => {
+    connectionIndicator.style.backgroundColor = "red";
+    statusText.textContent = "Error";
+    logMsg("Error: " + error.message);
+  });
 
-        client = mqtt.connect(broker, {
-            clientId,
-            username: user,
-            password: pass,
-            connectTimeout: 5000,
-            keepalive: 30,
-            clean: false,
-            reconnectPeriod: 2000
-        });
-
-        client.on('connect', () => {
-            statusEl.textContent = "✅ Conectado a " + broker;
-            Object.keys(topicos).forEach(t => client.subscribe(t));
-            logMsg("Suscrito a: " + Object.keys(topicos).join(", "));
-        });
-
-        client.on('message', (topic, message) => {
-            const msg = message.toString();
-            logMsg(`📥 [${topic}] ${msg}`);
-
-            if (topicos[topic]) {
-                actualizarCelda(topicos[topic], msg);
-            }
-        });
-
-        client.on('error', (err) => {
-            statusEl.textContent = "❌ Error: " + err.message;
-            logMsg(`Error: ${err.message}`);
-        });
-
-        client.on('close', () => {
-            statusEl.textContent = "⚠️ Desconectado, reconectando...";
-            logMsg(`Conexión cerrada`);
-        });
-    });
+  client.on('close', () => {
+    connectionIndicator.style.backgroundColor = "red";
+    statusText.textContent = "Desconectado";
+    logMsg("Conexión cerrada");
+  });
 </script>
 </body>
 </html>
+
+
 
