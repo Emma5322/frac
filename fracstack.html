@@ -87,14 +87,25 @@
 
   /* Media query para pantallas pequeñas */
   @media (max-width: 768px) {
-    #container {
-      flex-direction: column;
-      padding: 10px;
-    }
-    #tablaContainer, #chartContainer {
-      width: 100%;
-      flex: none;
-      margin-bottom: 20px;
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    overflow-x: hidden; /* evita scroll horizontal */
+  }
+  #container {
+    flex-direction: column;
+    padding: 0; /* quitar padding para que no haya margen */
+    width: 100vw;
+    box-sizing: border-box;
+  }
+  #tablaContainer, #chartContainer {
+    width: 100vw !important; /* asegurar que ocupa toda la pantalla */
+    flex: none;
+    margin: 0 0 20px 0;
+    box-sizing: border-box;
+    padding: 15px;
+  }argin-bottom: 20px;
     }
   }
 </style>
@@ -266,6 +277,7 @@
 </script>
 </body>
 </html>
+
 
 
 
