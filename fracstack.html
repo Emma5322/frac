@@ -15,69 +15,69 @@ html, body {
   background: #f4f4f4;
 }
 
+/* Header */
+#mainHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+#logo {
+  height: 50px;
+  width: auto;
+}
+#connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#connectionIndicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: red;
+}
+#statusText {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Contenedor principal */
 #container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  justify-content: space-between; /* espacio entre */
+  justify-content: space-between;
   gap: 20px;
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
   flex-wrap: nowrap;
 }
-
 #tablaContainer, #chartContainer {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 15px;
   overflow: hidden;
-  flex: 1;             /* que crezcan igual */
-  max-width: none;     /* no limitar ancho */
+  flex: 1;
+  max-width: none;
   box-sizing: border-box;
-  min-width: 0;        /* para evitar overflow */
-}
-
-/* Títulos */
-h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
+  min-width: 0;
 }
 
 /* Tabla */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
+h2 { margin: 0 0 15px; color: #333; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 .verde { background-color: #4CAF50; color: white; }
 .rojo { background-color: #f44336; color: white; }
 .amarillo { background-color: #ffeb3b; color: black; }
 
-/* Indicador conexión */
-#connectionIndicator {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 10px;
-  vertical-align: middle;
-  background-color: red;
-}
-#statusText {
-  font-weight: bold;
-  display: inline-block;
-  vertical-align: middle;
-  color: #333;
-}
-
-/* Log de mensajes MQTT */
+/* Log */
 #log {
   font-family: monospace;
   font-size: 12px;
@@ -90,7 +90,7 @@ th, td {
   padding: 6px;
 }
 
-/* Media query para móviles y tablets (portrait y landscape) hasta 1024px */
+/* Responsive */
 @media (max-width: 1024px) {
   #container {
     flex-direction: column;
@@ -105,55 +105,18 @@ th, td {
     flex: none;
   }
 }
-
-  #mainHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* logo a la izq, estado a la der */
-  padding: 10px 20px;
-  background: white;
-  border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-#logo {
-  height: 50px; /* ajustá tamaño */
-  width: auto;
-}
-
-#connectionStatus {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#connectionIndicator {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: red; /* por defecto desconectado */
-}
-
-#statusText {
-  font-weight: bold;
-  color: #333;
-}
-
-
-  
 </style>
 </head>
 <body>
   <header id="mainHeader">
     <img src="Logo.png" alt="Logo" id="logo">
-    <!-- Si querés, el indicador de conexión también puede ir acá -->
     <div id="connectionStatus">
       <span id="connectionIndicator"></span>
       <span id="statusText">Desconectado</span>
     </div>
   </header>
-  <h1 style="text-align:center; margin-top:10px;">Pozo 1</h1>
 
+  <h1 style="text-align:center; margin-top:10px;">Pozo 1</h1>
 
   <div id="container">
     <div id="tablaContainer">
@@ -168,24 +131,15 @@ th, td {
       </table>
     </div>
 
-    
     <div id="chartContainer">
       <h2>PPozo1 (últimos datos)</h2>
       <canvas id="chart" style="width:100%; max-height:300px;"></canvas>
       <div id="log"></div>
     </div>
-
-
   </div>
 
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Configuración fija del broker y credenciales
-  const brokerUrl = ""; 
-  const mqttUser = "Emmanuel";
-  const mqttPass = "Emma1234";
-
   const topicosValvulas = {
     'COREstado': 'valvula-COR',
     'SMEstado':  'valvula-SM',
@@ -224,7 +178,7 @@ th, td {
     }
   }
 
-  // Configuración Chart.js para PPozo1
+  // Chart.js
   const ctx = document.getElementById('chart').getContext('2d');
   const maxPoints = 30;
   const chartData = {
@@ -240,17 +194,16 @@ th, td {
       pointHoverRadius: 5,
     }]
   };
-  const chartOptions = {
-    responsive: true,
-    scales: {
-      x: { display: true, title: { display: true, text: 'Tiempo' } },
-      y: { display: true, title: { display: true, text: 'Valor' }, beginAtZero: true }
-    }
-  };
   const myChart = new Chart(ctx, {
     type: 'line',
     data: chartData,
-    options: chartOptions
+    options: {
+      responsive: true,
+      scales: {
+        x: { display: true, title: { display: true, text: 'Tiempo' } },
+        y: { display: true, title: { display: true, text: 'Valor' }, beginAtZero: true }
+      }
+    }
   });
 
   function agregarDatoAlChart(valor) {
@@ -264,65 +217,42 @@ th, td {
     myChart.update();
   }
 
-  // Conexión MQTT
-  const clientId = 'web-dashboard-' + Math.random().toString(16).substr(2,8);
+  // Conexión WebSocket (Node-RED debe tener /ws/mqtt configurado)
+  const ws = new WebSocket("wss://b9ceb2116a68.ngrok-free.app/ws/mqtt");
 
-  const client = mqtt.connect(brokerUrl, {
-    clientId,
-    username: mqttUser,
-    password: mqttPass,
-    clean: false,
-    reconnectPeriod: 2000,
-    connectTimeout: 5000,
-    keepalive: 30
-  });
-
-  client.on('connect', () => {
+  ws.onopen = () => {
     connectionIndicator.style.backgroundColor = "green";
     statusText.textContent = "Conectado";
-    // Suscribimos a todos los tópicos de válvulas + PPozo1
-    Object.keys(topicosValvulas).forEach(t => client.subscribe(t));
-    client.subscribe("PPozo1");
-    logMsg("Conectado y suscrito a tópicos.");
-  });
+    logMsg("Conectado al servidor Node-RED");
+  };
 
-  client.on('message', (topic, message) => {
-    const msg = message.toString();
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data); // { topic: "...", payload: "..." }
+    const topic = data.topic;
+    const msg = data.payload;
+
     logMsg(`📥 [${topic}] ${msg}`);
 
     if (topicosValvulas[topic]) {
       actualizarCelda(topicosValvulas[topic], msg);
     }
 
-    if (topic === "PPozo1") {
+    if (topic === "SMEstado") {
       const valor = parseFloat(msg);
       if (!isNaN(valor)) {
         agregarDatoAlChart(valor);
       }
     }
-  });
+  };
 
-  client.on('error', (error) => {
-    connectionIndicator.style.backgroundColor = "red";
-    statusText.textContent = "Error";
-    logMsg("Error: " + error.message);
-  });
-
-  client.on('close', () => {
+  ws.onclose = () => {
     connectionIndicator.style.backgroundColor = "red";
     statusText.textContent = "Desconectado";
     logMsg("Conexión cerrada");
-  });
+  };
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 
