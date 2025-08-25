@@ -73,9 +73,9 @@ html, body {
 h2 { margin: 0 0 15px; color: #333; }
 table { width: 100%; border-collapse: collapse; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-.verde { background-color: #4CAF50; color: white; }
-.rojo { background-color: #f44336; color: white; }
-.amarillo { background-color: #ffeb3b; color: black; }
+.verde { background-color: green; color: white; }
+.rojo { background-color: red; color: white; }
+.amarillo { background-color: yellow; color: black; }
 
 /* Log */
 #log {
@@ -166,13 +166,13 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 
     if (estado === "ABIERTA") {
       celda.textContent = "ABIERTA";
-      celda.classList.add("green");
+      celda.classList.add("verde");
     } else if (estado === "CERRADA") {
       celda.textContent = "CERRADA";
-      celda.classList.add("red");
+      celda.classList.add("rojo");
     } else if (estado === "TRANSICION") {
       celda.textContent = "TRANSICIÓN";
-      celda.classList.add("yellow");
+      celda.classList.add("amarillo");
     } else {
       celda.textContent = estado.toUpperCase();
     }
@@ -260,6 +260,7 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 </script>
 </body>
 </html>
+
 
 
 
