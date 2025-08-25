@@ -232,7 +232,7 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     data = JSON.parse(event.data); // intenta parsear JSON
   } catch (e) {
     // si no es JSON, lo tratamos como texto crudo
-    data = { topic: "SMEstado", payload: event.data }; // forzamos que sea SMEstado
+//    data = { topic: "SMEstado", payload: event.data }; // forzamos que sea SMEstado
   }
 
   const topic = data.topic;
@@ -260,6 +260,7 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 </script>
 </body>
 </html>
+
 
 
 
