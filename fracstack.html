@@ -164,13 +164,13 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     estado = estado.trim().toLowerCase();
     estado = estado.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-    if (estado === "abierta") {
+    if (estado === "ABIERTA") {
       celda.textContent = "ABIERTA";
       celda.classList.add("verde");
-    } else if (estado === "cerrada") {
+    } else if (estado === "CERRADA") {
       celda.textContent = "CERRADA";
       celda.classList.add("rojo");
-    } else if (estado === "transicion") {
+    } else if (estado === "TRANSICION") {
       celda.textContent = "TRANSICIÓN";
       celda.classList.add("amarillo");
     } else {
@@ -226,10 +226,17 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     logMsg("Conectado al servidor Node-RED");
   };
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data); // { topic: "...", payload: "..." }
-    const topic = data.topic;
-    const msg = data.payload;
+ ws.onmessage = (event) => {
+  let data;
+  try {
+    data = JSON.parse(event.data); // intenta parsear JSON
+  } catch (e) {
+    // si no es JSON, lo tratamos como texto crudo
+    data = { topic: "SMEstado", payload: event.data }; // forzamos que sea SMEstado
+  }
+
+  const topic = data.topic;
+  const msg = data.payload;
 
     logMsg(`📥 [${topic}] ${msg}`);
 
@@ -253,6 +260,7 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 </script>
 </body>
 </html>
+
 
 
 
