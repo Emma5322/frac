@@ -131,17 +131,19 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
       </table>
     </div>
 
-    <div id="chartContainer">
-      <h2>PPozo1 (últimos datos)</h2>
-      <canvas id="chart" style="width:100%; max-height:300px;"></canvas>
-      <div id="log"></div>
-    </div>
+
+
+<div id="chartContainer">
+  <h2>PPozo1 (últimos datos)</h2>
+  <canvas id="chartPozo1" style="width:100%; max-height:300px;"></canvas>
+  <div id="log"></div>
+</div>
+
+<div id="chartContainer">
+  <h2>PZipper1 (últimos datos)</h2>
+  <canvas id="chartZipper1" style="width:100%; max-height:300px;"></canvas>
+</div>
     
-        <div id="chartContainer">
-      <h2>PZipper1 (últimos datos)</h2>
-      <canvas id="chart" style="width:100%; max-height:300px;"></canvas>
-      <div id="log"></div>
-    </div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -186,48 +188,71 @@ function actualizarCelda(id, estado) {
 
   // Chart.js
   const ctx = document.getElementById('chart').getContext('2d');
-  const maxPoints = 30;
-  const chartData = {
-    labels: [],
-    datasets: [{
-      label: 'PPozo1',
-      data: [],
-      borderColor: 'rgba(0,123,255,1)',
-      backgroundColor: 'rgba(0,123,255,0.3)',
-      fill: true,
-      tension: 0.3,
-      pointRadius: 2,
-      pointHoverRadius: 5,
-    }]
-  };
-const myChart = new Chart(ctx, {
+const maxPoints = 30;
+
+// Chart PPozo1
+const ctxPozo1 = document.getElementById('chartPozo1').getContext('2d');
+const chartDataPozo1 = {
+  labels: [],
+  datasets: [{
+    label: 'PPozo1',
+    data: [],
+    borderColor: 'rgba(0,123,255,1)',
+    backgroundColor: 'rgba(0,123,255,0.3)',
+    fill: true,
+    tension: 0.3,
+    pointRadius: 2,
+    pointHoverRadius: 5,
+  }]
+};
+const chartPozo1 = new Chart(ctxPozo1, {
   type: 'line',
-  data: chartData,
-  options: {
-    responsive: true,
-    scales: {
-      x: { 
-        display: true, 
-        title: { display: true, text: 'Tiempo (s)' } 
-      },
-      y: { 
-        display: true, 
-        title: { display: true, text: 'Presión (Psi)' } 
-        // 👈 sin beginAtZero
-      }
-    }
-  }
+  data: chartDataPozo1,
+  options: { responsive: true, scales: { x: { display: true }, y: { display: true } } }
 });
 
-function agregarDatoAlChart(valor) {
+function agregarDatoPozo1(valor) {
   const time = new Date().toLocaleTimeString();
-  if (chartData.labels.length >= maxPoints) {
-    chartData.labels.shift();
-    chartData.datasets[0].data.shift();
+  if (chartDataPozo1.labels.length >= maxPoints) {
+    chartDataPozo1.labels.shift();
+    chartDataPozo1.datasets[0].data.shift();
   }
-  chartData.labels.push(time);
-  chartData.datasets[0].data.push(valor);
-  myChart.update();
+  chartDataPozo1.labels.push(time);
+  chartDataPozo1.datasets[0].data.push(valor);
+  chartPozo1.update();
+}
+
+// Chart PZipper1
+const ctxZipper1 = document.getElementById('chartZipper1').getContext('2d');
+const chartDataZipper1 = {
+  labels: [],
+  datasets: [{
+    label: 'PZipper1',
+    data: [],
+    borderColor: 'rgba(255,99,132,1)',
+    backgroundColor: 'rgba(255,99,132,0.3)',
+    fill: true,
+    tension: 0.3,
+    pointRadius: 2,
+    pointHoverRadius: 5,
+  }]
+};
+const chartZipper1 = new Chart(ctxZipper1, {
+  type: 'line',
+  data: chartDataZipper1,
+  options: { responsive: true, scales: { x: { display: true }, y: { display: true } } }
+});
+
+function agregarDatoZipper1(valor) {
+  const time = new Date().toLocaleTimeString();
+  if (chartDataZipper1.labels.length >= maxPoints) {
+    chartDataZipper1.labels.shift();
+    chartDataZipper1.datasets[0].data.shift();
+  }
+  chartDataZipper1.labels.push(time);
+  chartDataZipper1.datasets[0].data.push(valor);
+  chartZipper1.update();
+}
 }
 
   // Conexión WebSocket (Node-RED debe tener /ws/mqtt configurado)
@@ -269,6 +294,7 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
+
 
 
 
