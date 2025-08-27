@@ -194,28 +194,35 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
       pointHoverRadius: 5,
     }]
   };
-  const myChart = new Chart(ctx, {
-    type: 'line',
-    data: chartData,
-    options: {
-      responsive: true,
-      scales: {
-        x: { display: true, title: { display: true, text: 'Tiempo' } },
-        y: { display: true, title: { display: true, text: 'Valor' }, beginAtZero: true }
+const myChart = new Chart(ctx, {
+  type: 'line',
+  data: chartData,
+  options: {
+    responsive: true,
+    scales: {
+      x: { 
+        display: true, 
+        title: { display: true, text: 'Tiempo' } 
+      },
+      y: { 
+        display: true, 
+        title: { display: true, text: 'Valor' } 
+        // 👈 sin beginAtZero
       }
     }
-  });
-
-  function agregarDatoAlChart(valor) {
-    const time = new Date().toLocaleTimeString();
-    if (chartData.labels.length >= maxPoints) {
-      chartData.labels.shift();
-      chartData.datasets[0].data.shift();
-    }
-    chartData.labels.push(time);
-    chartData.datasets[0].data.push(valor);
-    myChart.update();
   }
+});
+
+function agregarDatoAlChart(valor) {
+  const time = new Date().toLocaleTimeString();
+  if (chartData.labels.length >= maxPoints) {
+    chartData.labels.shift();
+    chartData.datasets[0].data.shift();
+  }
+  chartData.labels.push(time);
+  chartData.datasets[0].data.push(valor);
+  myChart.update();
+}
 
   // Conexión WebSocket (Node-RED debe tener /ws/mqtt configurado)
   const ws = new WebSocket("wss://34aa23c4acf0.ngrok-free.app/ws/mqtt");
@@ -255,11 +262,6 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
-
-
-
-
-
 
 
 
