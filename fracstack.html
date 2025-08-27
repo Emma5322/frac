@@ -253,7 +253,7 @@ function agregarDatoZipper1(valor) {
   chartDataZipper1.datasets[0].data.push(valor);
   chartZipper1.update();
 }
-}
+
 
   // Conexión WebSocket (Node-RED debe tener /ws/mqtt configurado)
   const ws = new WebSocket("wss://34aa23c4acf0.ngrok-free.app/ws/mqtt");
@@ -294,6 +294,7 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
+
 
 
 
