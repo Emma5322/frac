@@ -202,11 +202,11 @@ const myChart = new Chart(ctx, {
     scales: {
       x: { 
         display: true, 
-        title: { display: true, text: 'Tiempo' } 
+        title: { display: true, text: 'Tiempo (s)' } 
       },
       y: { 
         display: true, 
-        title: { display: true, text: 'Valor' } 
+        title: { display: true, text: 'Presión (Psi)' } 
         // 👈 sin beginAtZero
       }
     }
@@ -262,6 +262,7 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
+
 
 
 
