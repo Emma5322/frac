@@ -279,8 +279,8 @@ ws.onmessage = (event) => {
   if (data.FBEstado) actualizarCelda("valvula-FB", data.FBEstado);
 
   // Si querés mostrar alguno en un chart:
-  if (data.PPozo1) { agregarDatoAlChart(data.PPozo1);
- if (data.PZipper1) { agregarDatoAlChart(data.PZipper1);
+if (data.PPozo1) agregarDatoPozo1(data.PPozo1);
+if (data.PZipper1) agregarDatoZipper1(data.PZipper1);
                     
   }
  
@@ -294,6 +294,7 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
+
 
 
 
