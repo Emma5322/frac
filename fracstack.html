@@ -248,8 +248,9 @@ ws.onmessage = (event) => {
   if (data.FBEstado) actualizarCelda("valvula-FB", data.FBEstado);
 
   // Si querés mostrar alguno en un chart:
-  if (data.PPozo1) { // por ejemplo, si tu flujo manda también valores numéricos
-    agregarDatoAlChart(data.PPozo1);
+  if (data.PPozo1) { agregarDatoAlChart(data.PPozo1);
+ if (data.PZipper1) { agregarDatoAlChart(data.PZipper1);
+                    
   }
  
   };
@@ -262,6 +263,7 @@ ws.onmessage = (event) => {
 </script>
 </body>
 </html>
+
 
 
 
