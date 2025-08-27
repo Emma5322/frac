@@ -158,25 +158,25 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  function actualizarCelda(id, estado) {
-    const celda = document.getElementById(id);
-    celda.className = "";
-    estado = estado.trim().toLowerCase();
-    estado = estado.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function actualizarCelda(id, estado) {
+  const celda = document.getElementById(id);
+  celda.className = "";
+  estado = estado.trim().toLowerCase();
+  estado = estado.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-    if (estado === "ABIERTA") {
-      celda.textContent = "ABIERTA";
-      celda.classList.add("verde");
-    } else if (estado === "CERRADA") {
-      celda.textContent = "CERRADA";
-      celda.classList.add("rojo");
-    } else if (estado === "TRANSICION") {
-      celda.textContent = "TRANSICIÓN";
-      celda.classList.add("amarillo");
-    } else {
-      celda.textContent = estado.toUpperCase();
-    }
+  if (estado === "abierta") {
+    celda.textContent = "ABIERTA";
+    celda.classList.add("verde");
+  } else if (estado === "cerrada") {
+    celda.textContent = "CERRADA";
+    celda.classList.add("rojo");
+  } else if (estado === "transicion") {
+    celda.textContent = "TRANSICIÓN";
+    celda.classList.add("amarillo");
+  } else {
+    celda.textContent = estado.toUpperCase();
   }
+}
 
   // Chart.js
   const ctx = document.getElementById('chart').getContext('2d');
