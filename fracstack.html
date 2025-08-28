@@ -272,7 +272,7 @@ function agregarDatoZipper1(valor) {
 
 
   // Conexión WebSocket (Node-RED debe tener /ws/mqtt configurado)
-  const ws = new WebSocket("wss://fracstackwenlen.loca.it/ws/mqtt");
+  const ws = new WebSocket("wss://fracstackwenlen.loca.lt/ws/mqtt");
 
   ws.onopen = () => {
     connectionIndicator.style.backgroundColor = "green";
@@ -310,6 +310,7 @@ if (data.PZipper1) agregarDatoZipper1(data.PZipper1);
 </script>
 </body>
 </html>
+
 
 
 
